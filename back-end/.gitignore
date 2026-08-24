@@ -15,3 +15,4 @@ coverage/
 npm-debug.log*
 
 .DS_Store
+/generated/prisma
