@@ -224,3 +224,109 @@ module.exports = ...
 ```
 
 This keeps the TypeScript configuration and Node.js module system consistent.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+## CORS
+
+Installed CORS support for the Express backend.
+
+Commands:
+
+```bash
+npm install cors
+npm install -D @types/cors
+```
+
+### Purpose
+
+`cors` is used to control which frontend applications are allowed to send requests to the backend API.
+
+Because the frontend and backend are hosted separately, they run on different origins.
+
+For example:
+
+```text
+Frontend:
+https://project-manager-nu-rose.vercel.app
+
+Backend:
+https://project-manager-api.onrender.com
+```
+
+Browsers apply Cross-Origin Resource Sharing rules when one origin tries to communicate with another.
+
+Without CORS configuration, the browser may block requests from the frontend to the backend.
+
+### Type Definitions
+
+Installed:
+
+```bash
+npm install -D @types/cors
+```
+
+This provides TypeScript type definitions for the `cors` package so TypeScript can understand its configuration and available options.
+
+### Backend Configuration
+
+Imported CORS into the Express server:
+
+```ts
+import cors from "cors";
+```
+
+Configured CORS using:
+
+```ts
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  })
+);
+```
+
+### FRONTEND_URL Environment Variable
+
+Added the following environment variable locally:
+
+```env
+FRONTEND_URL=http://localhost:3000
+```
+
+For production, the environment variable is configured on Render as:
+
+```env
+FRONTEND_URL=https://project-manager-nu-rose.vercel.app
+```
+
+### Why an Environment Variable Is Used
+
+The frontend URL is stored in an environment variable instead of being hardcoded into the backend.
+
+This allows the same backend code to work in different environments.
+
+```text
+Local Development
+FRONTEND_URL=http://localhost:3000
+
+Production
+FRONTEND_URL=https://project-manager-nu-rose.vercel.app
+```
+
+Only the value changes depending on where the application is running.
+
+### Credentials
+
+The following option was enabled:
+
+```ts
+credentials: true
+```
+
+This will allow the frontend and backend to work with authentication credentials such as cookies.
+
+This will become important later when the application uses an HttpOnly cookie for the JWT refresh token.
+
+---
