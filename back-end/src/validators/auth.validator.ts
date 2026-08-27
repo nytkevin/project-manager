@@ -25,3 +25,23 @@ export const signupSchema = z.object({
         ),
     ),
 });
+
+export const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .pipe(z.email("Invalid email address")),
+
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .pipe(
+      z
+        .string()
+        .regex(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/,
+          "Password must contain uppercase, lowercase, number, and special character",
+        ),
+    ),
+});
