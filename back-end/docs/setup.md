@@ -330,3 +330,5 @@ This will allow the frontend and backend to work with authentication credentials
 This will become important later when the application uses an HttpOnly cookie for the JWT refresh token.
 
 ---
+
+npx prisma generate
