@@ -85,28 +85,15 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function me(req: Request, res: Response) {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!req.user) {
     return res.status(401).json({
       message: "Unauthorized",
     });
   }
 
-  const accessToken = authHeader.slice("Bearer ".length).trim();
-
-  try {
-    const payload = verifyAccessToken(accessToken);
-    const user = await getUserById(payload.userId);
-
-    return res.status(200).json({
-      user,
-    });
-  } catch {
-    return res.status(401).json({
-      message: "Invalid or expired access token",
-    });
-  }
+  return res.status(200).json({
+    user: req.user,
+  });
 }
 
 export async function refreshAccessToken(req: Request, res: Response) {

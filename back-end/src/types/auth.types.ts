@@ -1,3 +1,5 @@
+import type { JwtPayload } from "jsonwebtoken";
+
 export type User = {
   id: number;
   name: string;
@@ -16,8 +18,6 @@ export type LoginData = {
   password: string;
 };
 
-import type { JwtPayload } from "jsonwebtoken";
-
 export type AuthTokenPayload = JwtPayload & {
   userId: number;
 };
@@ -31,3 +31,13 @@ export type LoginResponse = {
   user: User;
   accessToken: string;
 };
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: User;
+    }
+  }
+}
+
+export {};
