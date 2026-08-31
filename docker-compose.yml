@@ -1,0 +1,31 @@
+services:
+  back-end:
+    build:
+      context: ./back-end
+
+    container_name: project-manager-backend
+
+    ports:
+      - "3001:3001"
+
+    env_file:
+      - ./back-end/.env
+
+    environment:
+      PORT: 3001
+
+  front-end:
+    build:
+      context: ./front-end
+
+    container_name: project-manager-frontend
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      INTERNAL_API_URL: http://back-end:3001
+
+    depends_on:
+      - back-end
