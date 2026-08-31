@@ -1,8 +1,13 @@
 import * as argon2 from "argon2";
 import { prisma } from "../lib/prisma.js";
-import type { LoginData, SignupData } from "../types/auth.types.js";
+import type { LoginData, SignupData, User } from "../types/auth.types.js";
+import { verifyRefreshToken, createAccessToken } from "../utils/jwt.js";
 
-export async function registerUser({ name, email, password }: SignupData) {
+export async function registerUser({
+  name,
+  email,
+  password,
+}: SignupData): Promise<User> {
   const normalizedEmail = email.toLowerCase();
 
   const existingUser = await prisma.user.findUnique({
@@ -35,7 +40,10 @@ export async function registerUser({ name, email, password }: SignupData) {
   return user;
 }
 
-export async function authenticateUser({ email, password }: LoginData) {
+export async function authenticateUser({
+  email,
+  password,
+}: LoginData): Promise<User> {
   const normalizedEmail = email.toLowerCase();
 
   const existingUser = await prisma.user.findUnique({
@@ -63,4 +71,42 @@ export async function authenticateUser({ email, password }: LoginData) {
     email: existingUser.email,
     createdAt: existingUser.createdAt,
   };
+}
+
+export async function getUserById(userId: number): Promise<User> {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      createdAt: true,
+    },
+  });
+
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  return user;
+}
+
+export async function refreshUserAccessToken(refreshToken: string) {
+  const payload = verifyRefreshToken(refreshToken);
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: payload.userId,
+    },
+  });
+
+  if (!user) {
+    throw new Error("INVALID_REFRESH_TOKEN");
+  }
+
+  const accessToken = createAccessToken(user.id);
+
+  return accessToken;
 }

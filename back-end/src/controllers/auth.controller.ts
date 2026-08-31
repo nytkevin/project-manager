@@ -1,6 +1,16 @@
 import type { Request, Response } from "express";
 import { loginSchema, signupSchema } from "../validators/auth.validator.js";
-import { authenticateUser, registerUser } from "../services/auth.service.js";
+import {
+  authenticateUser,
+  getUserById,
+  refreshUserAccessToken,
+  registerUser,
+} from "../services/auth.service.js";
+import {
+  createAccessToken,
+  createRefreshToken,
+  verifyAccessToken,
+} from "../utils/jwt.js";
 
 export async function signup(req: Request, res: Response) {
   const result = signupSchema.safeParse(req.body);
@@ -46,10 +56,20 @@ export async function login(req: Request, res: Response) {
 
   try {
     const user = await authenticateUser(result.data);
+    const accessToken = createAccessToken(user.id);
+    const refreshToken = createRefreshToken(user.id);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(200).json({
       message: "Login successful",
       user,
+      accessToken,
     });
   } catch (error) {
     if (error instanceof Error && error.message === "INVALID CREDENTIALS") {
@@ -60,6 +80,53 @@ export async function login(req: Request, res: Response) {
 
     return res.status(500).json({
       message: "Internal server error",
+    });
+  }
+}
+
+export async function me(req: Request, res: Response) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
+  }
+
+  const accessToken = authHeader.slice("Bearer ".length).trim();
+
+  try {
+    const payload = verifyAccessToken(accessToken);
+    const user = await getUserById(payload.userId);
+
+    return res.status(200).json({
+      user,
+    });
+  } catch {
+    return res.status(401).json({
+      message: "Invalid or expired access token",
+    });
+  }
+}
+
+export async function refreshAccessToken(req: Request, res: Response) {
+  const refreshToken = req.cookies.refreshToken;
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      message: "Refresh token missing",
+    });
+  }
+
+  try {
+    const accessToken = await refreshUserAccessToken(refreshToken);
+
+    return res.status(200).json({
+      accessToken,
+    });
+  } catch {
+    return res.status(401).json({
+      message: "Invalid or expired refresh token",
     });
   }
 }
