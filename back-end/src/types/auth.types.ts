@@ -2,13 +2,15 @@ import type { JwtPayload } from "jsonwebtoken";
 
 export type User = {
   id: number;
-  name: string;
+  fullname: string;
+  username: string;
   email: string;
   createdAt: Date;
 };
 
 export type SignupData = {
-  name: string;
+  fullname: string;
+  username: string;
   email: string;
   password: string;
 };

@@ -10,7 +10,7 @@ import { requireAuth } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-router.post("/signup", signup);
+router.post("/register", signup);
 router.post("/login", login);
 router.get("/me", requireAuth, me);
 router.post("/refresh", refreshAccessToken);

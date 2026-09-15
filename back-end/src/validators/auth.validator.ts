@@ -1,11 +1,19 @@
 import { z } from "zod";
 
 export const signupSchema = z.object({
-  name: z
+  fullname: z
     .string()
     .trim()
-    .min(1, "Name is required")
-    .pipe(z.string().min(2, "Name must contain at least 2 characters")),
+    .min(1, "Full name is required")
+    .pipe(z.string().min(2, "Full name must contain at least 2 characters")),
+
+  username: z
+    .string()
+    .trim()
+    .min(1, "Username is required")
+    .pipe(
+      z.string().regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
+    ),
 
   email: z
     .string()

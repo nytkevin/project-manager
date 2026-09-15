@@ -4,7 +4,8 @@ import type { LoginData, SignupData, User } from "../types/auth.types.js";
 import { verifyRefreshToken, createAccessToken } from "../utils/jwt.js";
 
 export async function registerUser({
-  name,
+  fullname,
+  username,
   email,
   password,
 }: SignupData): Promise<User> {
@@ -24,14 +25,16 @@ export async function registerUser({
 
   const user = await prisma.user.create({
     data: {
-      name,
+      fullname,
+      username,
       email: normalizedEmail,
       passwordHash,
     },
 
     select: {
       id: true,
-      name: true,
+      fullname: true,
+      username: true,
       email: true,
       createdAt: true,
     },
@@ -67,7 +70,8 @@ export async function authenticateUser({
 
   return {
     id: existingUser.id,
-    name: existingUser.name,
+    fullname: existingUser.fullname,
+    username: existingUser.username,
     email: existingUser.email,
     createdAt: existingUser.createdAt,
   };
@@ -80,7 +84,8 @@ export async function getUserById(userId: number): Promise<User> {
     },
     select: {
       id: true,
-      name: true,
+      fullname: true,
+      username: true,
       email: true,
       createdAt: true,
     },
