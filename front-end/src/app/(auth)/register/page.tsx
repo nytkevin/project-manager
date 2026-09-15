@@ -1,6 +1,6 @@
 "use client";
 
-import { type SyntheticEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 
 import { AuthCard } from "@/app/features/auth/components/authCard";
 import { AuthField } from "@/app/features/auth/components/authField";
@@ -13,6 +13,12 @@ import {
 import { validateSignup } from "@/app/features/auth/auth.validation";
 
 export default function SignupPage() {
+  const [status, setStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { form, errors, handleInput, validate } = useAuthForm({
     initialValues: SIGNUP_INITIAL_STATE,
     initialErrors: SIGNUP_INITIAL_ERRORS,
@@ -23,6 +29,7 @@ export default function SignupPage() {
     event: SyntheticEvent<HTMLFormElement, SubmitEvent>,
   ) => {
     event.preventDefault();
+    setStatus(null);
 
     if (!validate()) {
       return;
@@ -35,22 +42,38 @@ export default function SignupPage() {
       password: form.password,
     };
 
-    const res = await fetch("http://localhost:5000/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    setIsSubmitting(true);
 
-    const data = await res.json();
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
 
-    if (!res.ok) {
-      console.error(data);
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        setStatus({
+          type: "error",
+          message: data.message ?? "Account creation failed. Please try again.",
+        });
+
+        return;
+      }
+
+      setStatus({
+        type: "success",
+        message: data.message ?? "Account created successfully.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    console.log("Account created:", data);
   };
 
   return (
@@ -111,11 +134,25 @@ export default function SignupPage() {
           onChange={handleInput}
         />
 
+        {status && (
+          <p
+            role="alert"
+            className={
+              status.type === "success"
+                ? "rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300"
+                : "rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300"
+            }
+          >
+            {status.message}
+          </p>
+        )}
+
         <button
           type="submit"
+          disabled={isSubmitting}
           className="w-full rounded-xl bg-white px-4 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
-          Sign up
+          {isSubmitting ? "Creating account..." : "Sign up"}
         </button>
       </form>
     </AuthCard>

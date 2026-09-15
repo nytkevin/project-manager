@@ -9,9 +9,17 @@ import { validateLogin } from "@/app/features/auth/auth.validation";
 import { AuthCard } from "@/app/features/auth/components/authCard";
 import { AuthField } from "@/app/features/auth/components/authField";
 import { useAuthForm } from "@/app/features/auth/hooks/useAuthForm";
-import type { SyntheticEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useState, type SyntheticEvent } from "react";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [status, setStatus] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const { form, errors, handleInput, validate } = useAuthForm({
     initialValues: LOGIN_INITIAL_STATE,
     initialErrors: LOGIN_INITIAL_ERRORS,
@@ -22,6 +30,7 @@ export default function LoginPage() {
     event: SyntheticEvent<HTMLFormElement, SubmitEvent>,
   ) => {
     event.preventDefault();
+    setStatus(null);
 
     if (!validate()) {
       return;
@@ -32,22 +41,35 @@ export default function LoginPage() {
       password: form.password,
     };
 
-    const res = await fetch("http://localhost:5000/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    setIsSubmitting(true);
 
-    const data = await res.json();
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) {
-      console.error(data);
-      return;
+      const data = await res.json();
+
+      setStatus({
+        type: res.ok ? "success" : "error",
+        message: data.message ?? "Login failed. Please try again.",
+      });
+
+      if (res.ok) {
+        router.push("/dashboard");
+      }
+    } catch {
+      setStatus({
+        type: "error",
+        message: "Unable to sign in. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    console.log("Account created:", data);
   };
 
   return (
@@ -75,11 +97,25 @@ export default function LoginPage() {
           onChange={handleInput}
         />
 
+        {status && (
+          <p
+            role="alert"
+            className={
+              status.type === "success"
+                ? "rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300"
+                : "rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-300"
+            }
+          >
+            {status.message}
+          </p>
+        )}
+
         <button
           type="submit"
+          disabled={isSubmitting}
           className="w-full rounded-xl bg-white px-4 py-3 font-medium text-black transition hover:bg-zinc-200"
         >
-          Sign in
+          {isSubmitting ? "Signing in..." : "Sign in"}
         </button>
       </form>
     </AuthCard>
