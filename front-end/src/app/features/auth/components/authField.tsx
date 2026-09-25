@@ -7,7 +7,7 @@ export function AuthField({
   value,
   error,
   placeholder,
-  hint,
+
   onChange,
 }: AuthFieldProps) {
   const messageId = `${name}-message`;
@@ -38,7 +38,7 @@ export function AuthField({
         id={messageId}
         className={error ? "text-sm text-red-400" : "text-xs text-zinc-400"}
       >
-        {error || hint}
+        {error}
       </p>
     </div>
   );
