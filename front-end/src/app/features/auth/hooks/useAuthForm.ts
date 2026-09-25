@@ -2,13 +2,7 @@
 
 import { useState, type ChangeEvent } from "react";
 
-import type { FormErrors, FormValidator } from "../auth.types";
-
-type UseAuthFormOptions<T extends object> = {
-  initialValues: T;
-  initialErrors: FormErrors<T>;
-  validator: FormValidator<T>;
-};
+import type { FormErrors, UseAuthFormOptions } from "../auth.types";
 
 export function useAuthForm<T extends object>({
   initialValues,
@@ -17,6 +11,7 @@ export function useAuthForm<T extends object>({
 }: UseAuthFormOptions<T>) {
   const [form, setForm] = useState<T>(initialValues);
   const [errors, setErrors] = useState<FormErrors<T>>(initialErrors);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.currentTarget;
@@ -27,12 +22,16 @@ export function useAuthForm<T extends object>({
     } as T;
 
     setForm(nextForm);
-    setErrors(validator(nextForm));
+
+    if (hasSubmitted) {
+      setErrors(validator(nextForm));
+    }
   };
 
   const validate = (): boolean => {
     const nextErrors = validator(form);
 
+    setHasSubmitted(true);
     setErrors(nextErrors);
 
     return !Object.values(nextErrors).some(Boolean);
@@ -41,11 +40,13 @@ export function useAuthForm<T extends object>({
   const resetForm = () => {
     setForm(initialValues);
     setErrors(initialErrors);
+    setHasSubmitted(false);
   };
 
   return {
     form,
     errors,
+    setErrors,
     handleInput,
     validate,
     resetForm,

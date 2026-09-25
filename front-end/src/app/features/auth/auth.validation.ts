@@ -41,6 +41,10 @@ function validateSignupPassword(password: string): string {
     return "Password must include at least one number.";
   }
 
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return "Password must include at least one special character.";
+  }
+
   return "";
 }
 

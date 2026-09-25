@@ -82,7 +82,6 @@ export default function LoginPage() {
           value={form.email}
           error={errors.email}
           placeholder="you@example.com"
-          hint=""
           onChange={handleInput}
         />
 
@@ -93,7 +92,6 @@ export default function LoginPage() {
           value={form.password}
           error={errors.password}
           placeholder="*******"
-          hint="Enter your account password."
           onChange={handleInput}
         />
 
@@ -113,7 +111,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-white px-4 py-3 font-medium text-black transition hover:bg-zinc-200"
+          className="w-full rounded-xl bg-white px-4 py-3 font-medium text-black transition hover:bg-zinc-200 cursor-pointer"
         >
           {isSubmitting ? "Signing in..." : "Sign in"}
         </button>

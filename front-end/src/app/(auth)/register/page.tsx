@@ -86,7 +86,6 @@ export default function SignupPage() {
           value={form.fullname}
           error={errors.fullname}
           placeholder="John Doe"
-          hint=""
           onChange={handleInput}
         />
 
@@ -97,7 +96,6 @@ export default function SignupPage() {
           value={form.username}
           error={errors.username}
           placeholder="john_doe"
-          hint="Choose a unique username."
           onChange={handleInput}
         />
 
@@ -108,7 +106,6 @@ export default function SignupPage() {
           value={form.email}
           error={errors.email}
           placeholder="you@example.com"
-          hint=""
           onChange={handleInput}
         />
 
@@ -119,7 +116,6 @@ export default function SignupPage() {
           value={form.password}
           error={errors.password}
           placeholder="*******"
-          hint="Use at least 8 characters, one uppercase, one lowercase, and one number."
           onChange={handleInput}
         />
 
@@ -130,7 +126,6 @@ export default function SignupPage() {
           value={form.confirmPassword}
           error={errors.confirmPassword}
           placeholder="*******"
-          hint=""
           onChange={handleInput}
         />
 
@@ -150,7 +145,7 @@ export default function SignupPage() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full rounded-xl bg-white px-4 py-3 font-medium text-black transition hover:bg-zinc-200"
+          className="w-full rounded-xl bg-white px-4 py-3 font-medium text-black transition hover:bg-zinc-200 cursor-pointer"
         >
           {isSubmitting ? "Creating account..." : "Sign up"}
         </button>

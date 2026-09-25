@@ -35,7 +35,6 @@ export type AuthFieldProps = {
   value: string;
   error?: string;
   placeholder: string;
-  hint: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
 };
 
@@ -43,4 +42,10 @@ export type AuthCardProps = {
   eyebrow: string;
   title: string;
   children: ReactNode;
+};
+
+export type UseAuthFormOptions<T extends object> = {
+  initialValues: T;
+  initialErrors: FormErrors<T>;
+  validator: FormValidator<T>;
 };
