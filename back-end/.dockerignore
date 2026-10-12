@@ -1,6 +1,33 @@
-node_modules
-dist
+
+# Git
 .git
+.gitignore
+
+# Python virtual environments
+.venv
+venv
+env
+
+# Python cache files
+__pycache__
+*.py[cod]
+*$py.class
+
+# Testing and tooling caches
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+
+# Environment variables and secrets
 .env
 .env.*
-npm-debug.log
+
+# Build artifacts
+build
+dist
+*.egg-info
+
+# Logs
+*.log
