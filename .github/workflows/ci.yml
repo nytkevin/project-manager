@@ -62,6 +62,15 @@ jobs:
 
       - name: Check Python syntax
         run: python -m compileall -q app
+      
+      - name: Debug Python imports
+        run: |
+          pwd
+          ls -la
+          ls -la app
+          python -c "import sys; print('\n'.join(sys.path))"
+          python -c "import app.main; print('App import successful')"
+  
 
       - name: Run backend tests
         run: pytest
