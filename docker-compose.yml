@@ -1,23 +1,16 @@
 
 services:
   back-end:
-    build:
-      context: ./back-end
-
+    image: ghcr.io/nytkevin/project-manager-backend:latest
     container_name: project-manager-backend
-
     ports:
       - "8000:8000"
-
     env_file:
       - ./back-end/.env.local
-
     environment:
       PORT: "8000"
       HOST: "0.0.0.0"
-
     restart: unless-stopped
-
     healthcheck:
       test:
         - CMD
@@ -30,20 +23,14 @@ services:
       start_period: 10s
 
   front-end:
-    build:
-      context: ./front-end
-
+    image: ghcr.io/nytkevin/project-manager-frontend:latest
     container_name: project-manager-frontend
-
     ports:
       - "3000:3000"
-
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
       INTERNAL_API_URL: http://back-end:8000
-
     depends_on:
       back-end:
         condition: service_healthy
-
     restart: unless-stopped
