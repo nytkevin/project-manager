@@ -34,3 +34,20 @@ services:
       back-end:
         condition: service_healthy
     restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    container_name: project-manager-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
