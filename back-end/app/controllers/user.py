@@ -27,7 +27,3 @@ def create_user(db: Session, user_data: UserCreate) -> User:
 
     db.refresh(user)
     return user
-
-
-def list_users(db: Session) -> list[User]:
-    return list(db.query(User).order_by(User.created_at, User.id).all())
