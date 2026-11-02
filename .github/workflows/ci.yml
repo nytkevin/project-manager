@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 26
+          node-version: 24
           cache: npm
           cache-dependency-path: front-end/package-lock.json
 
@@ -35,6 +35,8 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+        env: 
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
 
   back-end:
     name: FastAPI Checks
@@ -102,6 +104,8 @@ jobs:
           context: ./front-end
           push: false
           tags: project-manager-frontend:ci
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
 
       - name: Build backend image
         uses: docker/build-push-action@v6
