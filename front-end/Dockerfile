@@ -17,6 +17,7 @@ COPY . .
 RUN mkdir -p public
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+RUN test -n "$NEXT_PUBLIC_API_URL" || (echo "NEXT_PUBLIC_API_URL is required for the frontend build" && exit 1)
 RUN npm run build
 
 # 4. Create the production runtime
