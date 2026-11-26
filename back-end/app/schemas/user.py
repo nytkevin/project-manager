@@ -19,3 +19,8 @@ class UserResponse(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserUpdate(BaseModel):
+    fullname: str | None = Field(default=None, min_length=3, max_length=255)
+    username: str | None = Field(default=None, min_length=3, max_length=50)
